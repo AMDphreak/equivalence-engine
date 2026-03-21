@@ -37,3 +37,18 @@ def test_exec_rename(engine):
     code = "dialog.exec_()"
     expected = "dialog.exec()"
     assert engine.apply_rules(code) == expected
+
+def test_qregexp_rename(engine):
+    code = "rx = QRegExp('^[0-9]+$')"
+    expected = "rx = QRegularExpression('^[0-9]+$')"
+    assert engine.apply_rules(code) == expected
+
+def test_complex_enum(engine):
+    code = "slider.setOrientation(Qt.Horizontal)"
+    expected = "slider.setOrientation(Qt.Orientation.Horizontal)"
+    assert engine.apply_rules(code) == expected
+
+def test_event_pos(engine):
+    code = "p = event.pos()"
+    expected = "p = event.position()"
+    assert engine.apply_rules(code) == expected

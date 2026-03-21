@@ -115,6 +115,85 @@
       "type": "replace",
       "target": ".exec_()",
       "replacement": ".exec()"
+    },
+    // 5. QRegExp -> QRegularExpression
+    {
+      "type": "replace",
+      "target": "QRegExp",
+      "replacement": "QRegularExpression"
+    },
+    // 6. Enums (Fully Qualified) - Common ones
+    {
+      "type": "replace",
+      "target": "Qt.Checked",
+      "replacement": "Qt.CheckState.Checked"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.Unchecked",
+      "replacement": "Qt.CheckState.Unchecked"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.PartiallyChecked",
+      "replacement": "Qt.CheckState.PartiallyChecked"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.Horizontal",
+      "replacement": "Qt.Orientation.Horizontal"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.Vertical",
+      "replacement": "Qt.Orientation.Vertical"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.CaseSensitive",
+      "replacement": "Qt.CaseSensitivity.CaseSensitive"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.CaseInsensitive",
+      "replacement": "Qt.CaseSensitivity.CaseInsensitive"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.ArrowCursor",
+      "replacement": "Qt.CursorShape.ArrowCursor"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.WaitCursor",
+      "replacement": "Qt.CursorShape.WaitCursor"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.PointingHandCursor",
+      "replacement": "Qt.CursorShape.PointingHandCursor"
+    },
+    // 7. Event methods
+    {
+      "type": "regex",
+      "target": "\\.pos\\(\\)",
+      "replacement": ".position()"
+    },
+    {
+      "type": "regex",
+      "target": "\\.globalPos\\(\\)",
+      "replacement": ".globalPosition()"
+    },
+    // 8. Miscellaneous
+    {
+      "type": "replace",
+      "target": "qApp",
+      "replacement": "QApplication.instance()"
+    },
+    {
+      "type": "replace",
+      "target": "QNetworkRequest.FollowRedirectsAttribute",
+      "replacement": "QNetworkRequest.Attribute.RedirectPolicyAttribute"
     }
   ]
 }
