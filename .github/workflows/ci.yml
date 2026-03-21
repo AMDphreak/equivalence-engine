@@ -17,20 +17,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+    - name: Set up D
+      uses: dlang-community/setup-dlang@v1
       with:
-        python-version: ${{ matrix.python-version }}
-        
-    - name: Install uv
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        compiler: ldc-latest
 
-    - name: Install dependencies
-      run: |
-        uv sync
+    - name: Build
+      run: dub build
 
-    - name: Run tests
+    - name: Run Verification
       run: |
-        uv run pytest
+        # Create a test file
+        echo "from PyQt5.QtWidgets import QApplication, QAction" > test_qt5.py
+        ./qt-upgrader --path test_qt5.py --rules rules/qt5_to_qt6.sdl
+        grep "PyQt6" test_qt5.py
+        grep "QtGui" test_qt5.py

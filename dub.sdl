@@ -1,0 +1,7 @@
+name "qt-upgrader"
+description "Qt 5 to 6 Migration Tool"
+authors "AMDphreak"
+copyright "Copyright © 2026, AMDphreak"
+license "MIT"
+dependency "sdlang-d" version="~>0.10.6"
+targetType "executable"

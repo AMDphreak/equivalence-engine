@@ -1,46 +1,55 @@
-= Qt-Upgrader
-:toc:
-:icons: font
+= Qt Upgrader (D version)
+:revdate: 2026-03-21
+:toc: left
 
-A compile-time adaptation toolkit for automatically upgrading Qt5 code to Qt6 based on differences in implementation, module organization, naming, etc.
+A high-performance, compile-time adaptation toolkit for automatically upgrading Qt5 code to Qt6.
 
 == Features
 
-* **Automatic Migration**: Upgrades PyQt5 imports and usages to PyQt6.
-* **Rules-driven**: Customizable rulesets via JSON5.
-* **CI-Ready**: Designed to run as a CI step to generate Qt6-compatible code on the fly.
+* **Non-Bloated**: Compiled D binary (no Python runtime required).
+* **SDL Rules**: Uses human-friendly SDL rulesets.
+* **Fast**: Optimized regex processing.
+* **CI Ready**: Easily integrated into GitHub Actions.
 
 == Installation
 
+You only need the `dub` package manager (part of the D compiler suite).
+
 [source,powershell]
 ----
-uv tool install qt-upgrader
+git clone https://github.com/AMDphreak/qt-upgrader.git
+cd qt-upgrader
+dub build -b release
 ----
+
+The binary will be available in the root folder as `qt-upgrader` (or `qt-upgrader.exe`).
 
 == Usage
 
 [source,powershell]
 ----
-# Upgrade a directory
-qt-upgrader ./my-project
-
-# Dry run (see changes without applying)
-qt-upgrader ./my-project --dry-run
+./qt-upgrader --path "C:/my-project" --rules "rules/qt5_to_qt6.sdl"
 ----
 
-== Ruleset
+=== Options
 
-Default rules are located in `src/qt_upgrader/rules/qt5_to_qt6.json5`. You can provide a custom ruleset:
+* `-p, --path`: Path to process (folder or file).
+* `-r, --rules`: Path to the SDL rules file.
+* `-e, --extensions`: Comma-separated list of extensions (default: `.py,.cpp,.h`).
+* `-d, --dry-run`: See changes without applying them.
 
-[source,powershell]
+== Ruleset (SDL)
+
+Rules are defined in `rules/qt5_to_qt6.sdl`. Example:
+
+[source,sdl]
 ----
-qt-upgrader ./my-project --rules my-rules.json5
+ruleset "MyRules" {
+    replace "OldName" "NewName"
+    regex "\\.oldFunc\\(\\)" ".newFunc()"
+}
 ----
 
 == Changelog
 
-See link:CHANGELOG.md[CHANGELOG.md].
-
-== License
-
-MIT
+See link:CHANGELOG.md[CHANGELOG.md] for details.
