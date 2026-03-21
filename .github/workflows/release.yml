@@ -1,21 +1,17 @@
-name: Release
+name: release
 
 on:
   push:
     tags:
       - 'v*'
 
-permissions:
-  contents: write
-
 jobs:
   build:
-    name: Build Binary
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-
     steps:
       - uses: actions/checkout@v4
       - uses: dlang-community/setup-dlang@v1
@@ -23,15 +19,63 @@ jobs:
           compiler: ldc-latest
       - name: Build
         run: dub build -b release
-      - name: Rename Binary (Windows)
-        if: runner.os == 'Windows'
-        run: mv evolution-engine.exe evolution-engine-${{ matrix.os }}.exe
-      - name: Rename Binary (Unix)
-        if: runner.os != 'Windows'
-        run: mv evolution-engine evolution-engine-${{ matrix.os }}
-      - name: Upload Artifacts
+      - name: Rename binary (Windows)
+        if: matrix.os == 'windows-latest'
+        run: Move-Item bin/evolution-engine.exe bin/evolution-engine-${{ matrix.os }}.exe
+        shell: pwsh
+      - name: Rename binary (Unix)
+        if: matrix.os != 'windows-latest'
+        run: mv bin/evolution-engine bin/evolution-engine-${{ matrix.os }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: evolution-engine-${{ matrix.os }}
+          path: bin/evolution-engine-${{ matrix.os }}*
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: bin
+          merge-multiple: true
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: evolution-engine-*
+          files: bin/*
+          generate_release_notes: true
+
+  publish-pkg:
+    name: Publish Packages
+    needs: release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Winget Releaser
+        uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: AMDphreak.EvolutionEngine
+          max-retries: 3
+          token: ${{ secrets.WINGET_TOKEN }}
+
+  publish-homebrew:
+    name: Publish Homebrew
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Homebrew Formula
+        uses: mislav/bump-homebrew-formula-action@v3
+        with:
+          formula-name: evolution-engine
+          homebrew-tap: AMDphreak/homebrew-tap
+          download-url: https://github.com/AMDphreak/evolution-engine/releases/download/${{ github.ref_name }}/evolution-engine-macos-latest
+          commit-message: |
+            evolution-engine ${{ github.ref_name }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.WINGET_TOKEN }}

@@ -1,55 +1,80 @@
 = Evolution Engine
-:revdate: 2026-03-21
-:toc: left
+:toc:
+:toc-title: Table of Contents
+:icons: font
 
-The core transformation engine for the **Evolution Adaptation Ecosystem**. A high-performance, D-based platform for automated, rule-driven codebase evolution.
+The core engine for the Evolution Adaptation Ecosystem. This tool provides a powerful, version-aware D-based engine for migrating source code between library and framework versions using SDL-based rulesets.
 
 == Features
 
-* **Generic & Modular**: Decoupled from specific rulesets. Use it for Qt, OpenCV, React, or any framework.
-* **Version Traversal**: Automatically finds transformation paths between versions (e.g., `--from 1.0 --to 2.0`).
-* **SDL Rules**: Uses human-readable SDL (Simple Declarative Language) for defining transformation logic.
-* **Zero Dependencies**: Compiled D binary for near-instant execution in any environment.
+* **Shortest Path Migration**: Automatically find the optimal set of rules to migrate from version `A` to version `B`.
+* **Git Rulesets**: Dynamic retrieval of rulesets directly from Git repositories.
+* **SDL Based**: Human-readable and flexible rules using `sdlang-d`.
+* **Cross Platform**: Available on Windows, macOS, and Linux.
 
 == Installation
 
-Requires the `dub` package manager (part of the D compiler suite).
-
+=== Homebrew (macOS/Linux)
 [source,bash]
 ----
-git clone https://github.com/AMDphreak/evolution-engine.git
-cd evolution-engine
-dub build -b release
+brew tap AMDphreak/homebrew-tap
+brew install evolution-engine
+----
+
+=== Winget (Windows)
+[source,powershell]
+----
+winget install AMDphreak.EvolutionEngine
 ----
 
 == Usage
 
+=== Basic Migration
+To migrate a project from version 5.15 to 6.0 using local rules:
+
 [source,bash]
 ----
-./evolution-engine --path "/path/to/code" \
-                   --rules-dir "/path/to/rules" \
-                   --from "1.0" \
-                   --to "2.0"
+evolution-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0
+----
+
+=== Remote Ruleset (Cloud Rules)
+You can directly use a remote rules repository. The engine will clone the repo, find the necessary rules recursively, and clean up automatically.
+
+[source,bash]
+----
+evolution-engine --rules-repo https://github.com/AMDphreak/evolution-rules-qt --from 5.15 --to 6.0 --path ./src
 ----
 
 === CLI Options
 
-* `-p, --path`: Path to the source code to adapt (folder or file).
-* `-r, --rules-dir`: Directory containing version-specific rules (`[from]-[to].sdl`).
-* `-f, --from`: The starting version of your codebase.
-* `-t, --to`: The target version to evolve to.
-* `-e, --extensions`: Comma-separated list of file extensions (default: `.py,.cpp,.h`).
-* `-d, --dry-run`: Preview changes without modifying files.
+[cols="1,2"]
+|===
+| Option | Description
 
-== GitHub Action
+| `--path`, `-p`
+| Path to the project or file to process.
 
-For seamless CI/CD integration, use the modular **link:https://github.com/AMDphreak/evolution-action[Evolution Action]**. It automatically fetches the engine and your specified ruleset to adapt code during your build pipeline.
+| `--rules-dir`, `-R`
+| Local directory containing `.sdl` rulesets.
 
-== Rulesets
+| `--rules-repo`
+| Git URL of a remote rules repository.
 
-Standard rulesets are maintained in dedicated repositories:
-* **link:https://github.com/AMDphreak/evolution-rules-qt[Evolution Rules (Qt)]**: Migration rules for Qt 5.x to 6.x.
+| `--rules-repo-branch`
+| Branch to use for the remote repository (default: `main`).
 
-== Changelog
+| `--from`, `-f`
+| Source version (e.g., `1.0`).
 
-See link:CHANGELOG.md[CHANGELOG.md] for details.
+| `--to`, `-t`
+| Target version (e.g., `2.0`).
+
+| `--extensions`, `-e`
+| Comma-separated list of file extensions (default: `.py,.cpp,.h`).
+
+| `--dry-run`, `-d`
+| Perform a dry run without modifying files.
+|===
+
+== License
+MIT License. Copyright (c) 2026 AMDphreak.
