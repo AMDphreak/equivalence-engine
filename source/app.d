@@ -26,7 +26,7 @@ class MigrationEngine {
         try {
             Tag root = parseFile(sdlPath);
             foreach (tag; root.tags) {
-                if (tag.name == "ruleset") {
+                if (tag.name == "ruleset" || tag.name == "rule") {
                     foreach (ruleTag; tag.tags) {
                         Rule r;
                         r.type = ruleTag.name;
