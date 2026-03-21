@@ -1,4 +1,4 @@
-= Qt Upgrader (D version)
+= Qt Evolution Adapter
 :revdate: 2026-03-21
 :toc: left
 
