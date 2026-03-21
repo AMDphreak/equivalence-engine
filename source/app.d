@@ -8,6 +8,8 @@ import std.algorithm;
 import std.container;
 import sdlang;
 
+import std.process;
+
 struct Rule {
     string type;
     string target;
@@ -63,7 +65,7 @@ string[] findMigrationPath(string rulesDir, string fromVer, string toVer) {
 
     if (!exists(rulesDir)) return [];
 
-    foreach (DirEntry entry; dirEntries(rulesDir, SpanMode.shallow)) {
+    foreach (DirEntry entry; dirEntries(rulesDir, SpanMode.depth)) {
         if (entry.isFile && entry.name.endsWith(".sdl")) {
             auto base = baseName(entry.name, ".sdl");
             auto parts = base.split("-");
@@ -115,6 +117,8 @@ string[] findMigrationPath(string rulesDir, string fromVer, string toVer) {
 int main(string[] args) {
     string path = ".";
     string rulesDir = "rules/qt";
+    string rulesRepo = "";
+    string rulesRepoBranch = "main";
     string fromVer = "";
     string toVer = "";
     string extensions = ".py,.cpp,.h";
@@ -123,7 +127,9 @@ int main(string[] args) {
     auto helpInformation = getopt(
         args,
         "path|p", "Path to process", &path,
-        "rules-dir|R", "Directory containing SDL rules", &rulesDir,
+        "rules-dir|R", "Directory containing SDL rules (local)", &rulesDir,
+        "rules-repo", "Git repository URL for rulesets", &rulesRepo,
+        "rules-repo-branch", "Branch for the rules repository (default: main)", &rulesRepoBranch,
         "from|f", "Source version (e.g., 5.15)", &fromVer,
         "to|t", "Target version (e.g., 6.0)", &toVer,
         "extensions|e", "Comma-separated extensions", &extensions,
@@ -131,8 +137,52 @@ int main(string[] args) {
     );
 
     if (helpInformation.helpWanted || (fromVer != "" && toVer == "")) {
-        defaultGetoptPrinter("Qt Evolution Adapter", helpInformation.options);
+        defaultGetoptPrinter("Evolution Engine", helpInformation.options);
         return 0;
+    }
+
+    // Handle remote rules repository
+    string tmpRulesDir = ".evolution-rules-tmp";
+
+    void cleanup() {
+        if (exists(tmpRulesDir)) {
+            version(Windows) {
+                executeShell("rmdir /s /q " ~ tmpRulesDir);
+            } else {
+                rmdirRecurse(tmpRulesDir);
+            }
+        }
+    }
+
+    if (rulesRepo != "") {
+        cleanup();
+        
+        auto cloneCmd = executeShell("git clone --depth 1 -b " ~ rulesRepoBranch ~ " " ~ rulesRepo ~ " " ~ tmpRulesDir);
+        if (cloneCmd.status != 0) {
+            writeln("Failed to clone rules repository: ", cloneCmd.output);
+            return 1;
+        }
+
+        // Guardrail: Look for any SDL rule file in the repo
+        bool foundRule = false;
+        foreach (DirEntry entry; dirEntries(tmpRulesDir, SpanMode.depth)) {
+            if (entry.isFile && entry.name.endsWith(".sdl")) {
+                foundRule = true;
+                break;
+            }
+        }
+
+        if (!foundRule) {
+            writeln("Guardrail check failed: Repository does not contain any SDL rules.");
+            cleanup();
+            return 1;
+        }
+        rulesDir = tmpRulesDir;
+    }
+
+    // Always clean up temp rules if they were cloned
+    scope(exit) {
+        if (rulesRepo != "") cleanup();
     }
 
     auto engine = new MigrationEngine();
@@ -141,6 +191,7 @@ int main(string[] args) {
         auto pathFiles = findMigrationPath(rulesDir, fromVer, toVer);
         if (pathFiles.empty) {
             writeln("No migration path found from ", fromVer, " to ", toVer);
+            if (rulesRepo != "") cleanup();
             return 1;
         }
         writeln("Migration path: ", fromVer, " -> ", toVer, " using ", pathFiles);
@@ -154,6 +205,7 @@ int main(string[] args) {
             engine.loadRules(defaultRule);
         }
     }
+
 
     auto extList = extensions.split(",");
 
