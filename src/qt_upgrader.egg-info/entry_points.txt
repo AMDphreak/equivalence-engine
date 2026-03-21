@@ -1,0 +1,2 @@
+[console_scripts]
+qt-upgrader = qt_upgrader.main:main

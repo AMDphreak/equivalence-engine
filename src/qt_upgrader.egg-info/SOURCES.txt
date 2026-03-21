@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/qt_upgrader/__init__.py
+src/qt_upgrader/engine.py
+src/qt_upgrader/main.py
+src/qt_upgrader/py.typed
+src/qt_upgrader.egg-info/PKG-INFO
+src/qt_upgrader.egg-info/SOURCES.txt
+src/qt_upgrader.egg-info/dependency_links.txt
+src/qt_upgrader.egg-info/entry_points.txt
+src/qt_upgrader.egg-info/requires.txt
+src/qt_upgrader.egg-info/top_level.txt
+tests/test_migration.py

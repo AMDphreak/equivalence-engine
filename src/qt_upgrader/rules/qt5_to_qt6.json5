@@ -1,0 +1,120 @@
+{
+  "name": "qt5-to-qt6",
+  "description": "Standard rules for migrating PyQt5 code to PyQt6",
+  "rules": [
+    // 1. Basic Module Rename
+    {
+      "type": "replace",
+      "target": "PyQt5",
+      "replacement": "PyQt6"
+    },
+    // 2. Specific Module Moves (e.g., QAction moved from QtWidgets to QtGui)
+    {
+      "type": "regex",
+      "target": "from PyQt6\\.QtWidgets import ([^\\)]*?)QAction([^\\)]*?)",
+      "replacement": "from PyQt6.QtGui import QAction\nfrom PyQt6.QtWidgets import $1$2"
+    },
+    // 3. Enum/Flag Translation (Path mapping)
+    {
+      "type": "replace",
+      "target": "Qt.AlignLeft",
+      "replacement": "Qt.AlignmentFlag.AlignLeft"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.AlignRight",
+      "replacement": "Qt.AlignmentFlag.AlignRight"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.AlignTop",
+      "replacement": "Qt.AlignmentFlag.AlignTop"
+    },
+    {
+      "type": "replace",
+      "target": "Qt.AlignBottom",
+      "replacement": "Qt.AlignmentFlag.AlignBottom"
+    },
+    {
+      "type": "regex",
+      "target": "QSizePolicy\\.Expanding",
+      "replacement": "QSizePolicy.Policy.Expanding"
+    },
+    {
+      "type": "regex",
+      "target": "QSizePolicy\\.Preferred",
+      "replacement": "QSizePolicy.Policy.Preferred"
+    },
+    {
+      "type": "regex",
+      "target": "QSizePolicy\\.Fixed",
+      "replacement": "QSizePolicy.Policy.Fixed"
+    },
+    {
+      "type": "regex",
+      "target": "QListView\\.Adjust",
+      "replacement": "QListView.ResizeMode.Adjust"
+    },
+    {
+      "type": "regex",
+      "target": "QListView\\.LeftToRight",
+      "replacement": "QListView.Flow.LeftToRight"
+    },
+    {
+      "type": "regex",
+      "target": "QListWidget\\.IconMode",
+      "replacement": "QListWidget.ViewMode.IconMode"
+    },
+    {
+      "type": "regex",
+      "target": "QListWidget\\.NoFrame",
+      "replacement": "QListWidget.Shape.NoFrame"
+    },
+    {
+      "type": "replace",
+      "target": "QFrame.NoFrame",
+      "replacement": "QFrame.Shape.NoFrame"
+    },
+    {
+      "type": "replace",
+      "target": "QFrame.StyledPanel",
+      "replacement": "QFrame.Shape.StyledPanel"
+    },
+    {
+      "type": "replace",
+      "target": "QPainter.Antialiasing",
+      "replacement": "QPainter.RenderHint.Antialiasing"
+    },
+    {
+      "type": "replace",
+      "target": "QPalette.ColorRole.Background",
+      "replacement": "QPalette.ColorRole.Window"
+    },
+    {
+      "type": "replace",
+      "target": "QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength",
+      "replacement": "QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon"
+    },
+    {
+      "type": "replace",
+      "target": "QToolButton.InstantPopup",
+      "replacement": "QToolButton.ToolButtonPopupMode.InstantPopup"
+    },
+    // 4. Function Renames
+    {
+      "type": "replace",
+      "target": ".byteCount()",
+      "replacement": ".sizeInBytes()"
+    },
+    {
+      "type": "regex",
+      "target": "font\\.width\\(",
+      "replacement": "font.horizontalAdvance("
+    },
+    {
+      "type": "replace",
+      "target": ".exec_()",
+      "replacement": ".exec()"
+    }
+  ]
+}

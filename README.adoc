@@ -1,0 +1,46 @@
+= Qt-Upgrader
+:toc:
+:icons: font
+
+A compile-time adaptation toolkit for automatically upgrading Qt5 code to Qt6 based on differences in implementation, module organization, naming, etc.
+
+== Features
+
+* **Automatic Migration**: Upgrades PyQt5 imports and usages to PyQt6.
+* **Rules-driven**: Customizable rulesets via JSON5.
+* **CI-Ready**: Designed to run as a CI step to generate Qt6-compatible code on the fly.
+
+== Installation
+
+[source,powershell]
+----
+uv tool install qt-upgrader
+----
+
+== Usage
+
+[source,powershell]
+----
+# Upgrade a directory
+qt-upgrader ./my-project
+
+# Dry run (see changes without applying)
+qt-upgrader ./my-project --dry-run
+----
+
+== Ruleset
+
+Default rules are located in `src/qt_upgrader/rules/qt5_to_qt6.json5`. You can provide a custom ruleset:
+
+[source,powershell]
+----
+qt-upgrader ./my-project --rules my-rules.json5
+----
+
+== Changelog
+
+See link:CHANGELOG.md[CHANGELOG.md].
+
+== License
+
+MIT
