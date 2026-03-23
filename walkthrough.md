@@ -1,56 +1,93 @@
-# Walkthrough - Qt5 to Qt6 Adaptation Toolkit
+# Walkthrough - Unified Evolution Engine
 
-I have created a compile-time adaptation toolkit that automatically upgrades Qt5 code to Qt6. The solution consists of two repositories: a core CLI toolkit and a GitHub Action.
+The `evolution-engine` has been generalized into a multi-domain adaptation toolkit. It now handles both **Source Code Evolution** and **Filesystem Equivalence Mapping**, with a safety-first non-destructive default.
 
-## Core Toolkit: `qt-upgrader`
+## 1. Safety First: Non-Destructive by Default
 
-The `qt-upgrader` repository contains a Python-based CLI tool that applies migration rules to source code.
+The engine now defaults to a **dry-run** mode. No files are modified unless explicitly requested.
 
-*   **Repository**: [https://github.com/AMDphreak/qt-upgrader](https://github.com/AMDphreak/qt-upgrader)
-*   **Ruleset**: Uses a JSON5 ruleset to handle complex migrations like:
-    *   `PyQt5` -> `PyQt6` module renames.
-    *   Moving `QAction` from `QtWidgets` to `QtGui`.
-    *   Translating enums (e.g., `Qt.AlignLeft` -> `Qt.AlignmentFlag.AlignLeft`).
-    *   Renaming functions (e.g., `byteCount()` -> `sizeInBytes()`).
-*   **CLI Usage**:
-    ```powershell
-    # Upgrade a directory
-    qt-upgrader ./src
-    ```
-
-## GitHub Action: `qt-upgrader-action`
-
-The `qt-upgrader-action` repository provides a wrapper around the toolkit for use in CI workflows.
-
-*   **Repository**: [https://github.com/AMDphreak/qt-upgrader-action](https://github.com/AMDphreak/qt-upgrader-action)
-*   **Example Workflow**:
-    ```yaml
-    - name: Upgrade Qt5 to Qt6
-      uses: AMDphreak/qt-upgrader-action@main
-      with:
-        path: './src'
-    ```
-
-## Verification Results
-
-I verified the toolkit using unit tests that simulate common Qt5 to Qt6 migration scenarios:
-
-```python
-def test_pyqt_imports(engine):
-    code = "from PyQt5.QtCore import QObject, pyqtSignal"
-    expected = "from PyQt6.QtCore import QObject, pyqtSignal"
-    assert engine.apply_rules(code) == expected
-
-def test_qaction_move(engine):
-    code_v6 = "from PyQt6.QtWidgets import QAction"
-    result = engine.apply_rules(code_v6)
-    assert "from PyQt6.QtGui import QAction" in result
+```powershell
+# This will only print what WOULD happen
+evolution-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0
 ```
 
-All 5 tests passed successfully.
+### Destructive/Output Options
 
-## Next Steps
+- **`--in-place` (`-i`)**: Overwrite files in the source directory.
+- **`--out-dir` (`-o`)**: Write transformed files to a separate directory (preferred for CI).
 
-1.  **Tag Releases**: You may want to tag a `v1` release in both repositories for stable usage.
-2.  **Organization Transfers**: If you prefer these in a specific organization, you can use `gh api` to transfer them.
-3.  **Advanced Rules**: For more complex migrations (like event handling changes), you can add custom regex rules to [qt5_to_qt6.json5](file:///Z:/code/github.com/AMDphreak/qt-upgrader/src/qt_upgrader/rules/qt5_to_qt6.json5).
+---
+
+## 2. Domain: `code` (Default)
+
+This is the original functionality of the engine, used for migrating between library/framework versions.
+
+- Consolidates the functionality of the formerly separate `qt-upgrader`.
+- Uses SDL rulesets to rename modules, move classes, and transform APIs.
+
+```powershell
+# Upgrade Qt5 to Qt6 in-place
+evolution-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0 --in-place
+```
+
+---
+
+## 3. Domain: `filesystem` (New)
+
+A new intent-based mapping system for cross-distro path resolution.
+
+- **Intent-based**: Query an abstract "intent" (e.g., `lib_dir`).
+- **Context-aware**: Resolve for a specific distro/version.
+- **Fallback Logic**: If `ubuntu-24.04` is missing a mapping, it automatically falls back to `ubuntu/default` or `debian/default`.
+
+```powershell
+# Resolve where libraries are on Ubuntu Jammy
+evolution-engine --domain filesystem --to linux/ubuntu/22.04 lib_dir
+# Output: lib_dir -> /usr/lib/x86_64-linux-gnu
+```
+
+### Inheritance Metadata
+
+Each context directory can contain a `context.sdl` file for UI-layer DAG visualization:
+
+```sdl
+name = "ubuntu"
+inherits = ["debian"]
+family = "linux"
+```
+
+---
+
+## 4. Ecosystem Architecture
+
+The Evolution Adaptation Ecosystem is organized into three distinct tiers to separate logic, execution, and content:
+
+1. **The Engine** ([`evolution-engine`](https://github.com/AMDphreak/evolution-engine)):
+   - **Role**: Core logic and binary.
+   - **Responsibility**: Resolves shortest migration paths, parses SDL rules, and performs file transformations.
+   - **Usage**: CLI tool for local development and base for CI.
+
+2. **The Action** ([`evolution-engine-action`](https://github.com/AMDphreak/evolution-engine-action)):
+   - **Role**: CI/CD Wrapper.
+   - **Responsibility**: Facilitates running the engine in GitHub Actions. Automates D-language setup and ruleset checkouts.
+   - **Usage**: Included in `.github/workflows/*.yml`.
+
+3. **Content Repositories** (e.g., [`evolution-rules-qt`](https://github.com/AMDphreak/evolution-rules-qt)):
+   - **Role**: Rule Definitions.
+   - **Responsibility**: Contains the specific SDL files for a domain (Qt, Linux Filesystem, etc.).
+   - **Usage**: Passed to the Engine via `--rules-repo` or `--rules-dir`.
+
+---
+
+## 5. Consolidation Notice
+
+The specialized `qt-upgrader` project is now obsolete as all its features have been absorbed into the core `evolution-engine`. You can now use a single binary for all evolution and equivalence tasks.
+
+## Verification Summary
+
+I verified the following:
+
+- [x] **Dry-run default**: Confirmed the engine does not modify files without `-i` or `-o`.
+- [x] **Output Redirect**: Confirmed `--out-dir` correctly reconstructs the project tree in the target folder.
+- [x] **Filesystem Fallback**: Confirmed `lib_dir` resolves correctly by walking up the distro hierarchy.
+- [x] **Qt Migration**: Confirmed `PyQt5` -> `PyQt6` rules still apply correctly under the new architecture.

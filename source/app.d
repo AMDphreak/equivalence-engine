@@ -122,7 +122,10 @@ int main(string[] args) {
     string fromVer = "";
     string toVer = "";
     string extensions = ".py,.cpp,.h";
-    bool dryRun = false;
+    string domain = "code";
+    string outDir = "";
+    bool inPlace = false;
+    bool dryRun = true; // Non-destructive by default
 
     auto helpInformation = getopt(
         args,
@@ -133,8 +136,14 @@ int main(string[] args) {
         "from|f", "Source version (e.g., 5.15)", &fromVer,
         "to|t", "Target version (e.g., 6.0)", &toVer,
         "extensions|e", "Comma-separated extensions", &extensions,
-        "dry-run|d", "Dry run", &dryRun
+        "domain|D", "Domain to operate in (code|filesystem)", &domain,
+        "out-dir|o", "Output directory for transformed files", &outDir,
+        "in-place|i", "Modify files in-place (destructive)", &inPlace,
+        "dry-run|d", "Explicit dry run (default)", &dryRun
     );
+
+    if (inPlace) dryRun = false;
+    if (outDir != "") dryRun = false;
 
     if (helpInformation.helpWanted || (fromVer != "" && toVer == "")) {
         defaultGetoptPrinter("Evolution Engine", helpInformation.options);
@@ -185,6 +194,27 @@ int main(string[] args) {
         if (rulesRepo != "") cleanup();
     }
 
+    if (domain == "filesystem") {
+        if (toVer == "") {
+            writeln("Error: --to (context) is required for filesystem domain.");
+            return 1;
+        }
+        string intent = args.length > 1 ? args[1] : "";
+        if (intent == "") {
+            writeln("Error: intent name required as positional argument.");
+            return 1;
+        }
+
+        string result = resolveIntent(rulesDir, toVer, intent);
+        if (result != "") {
+            writeln(intent, " -> ", result);
+        } else {
+            writeln("Error: Could not resolve intent '", intent, "' for context '", toVer, "'");
+            return 1;
+        }
+        return 0;
+    }
+
     auto engine = new MigrationEngine();
     
     if (fromVer != "" && toVer != "") {
@@ -217,26 +247,69 @@ int main(string[] args) {
     if (isDir(path)) {
         foreach (DirEntry entry; dirEntries(path, SpanMode.depth)) {
             if (entry.isFile && extList.canFind(extension(entry.name))) {
-                processFile(entry.name, engine, dryRun);
+                processFile(entry.name, engine, dryRun, outDir, path);
             }
         }
     } else {
-        processFile(path, engine, dryRun);
+        processFile(path, engine, dryRun, outDir, dirName(path));
     }
 
     return 0;
 }
 
-void processFile(string filename, MigrationEngine engine, bool dryRun) {
+void processFile(string filename, MigrationEngine engine, bool dryRun, string outDir, string baseDir) {
     string content = readText(filename);
     string newContent = engine.applyRules(content);
 
-    if (content != newContent) {
+    if (content != newContent || outDir != "") {
         if (dryRun) {
             writeln("[DRY RUN] ", filename);
+        } else if (outDir != "") {
+            string relativePath = relativePath(filename, baseDir);
+            string targetPath = buildPath(outDir, relativePath);
+            string targetDir = dirName(targetPath);
+            if (!exists(targetDir)) mkdirRecurse(targetDir);
+            std.file.write(targetPath, newContent);
+            writeln("Created: ", targetPath);
         } else {
             std.file.write(filename, newContent);
             writeln("Updated: ", filename);
         }
     }
+}
+
+string resolveIntent(string rulesDir, string context, string intent) {
+    // context: e.g. "linux/ubuntu/22.04"
+    auto parts = context.split("/");
+    
+    // Check local, then default sibling, then up
+    while (parts.length > 0) {
+        string dir = buildPath(parts);
+        string file = buildPath(rulesDir, dir, intent ~ ".sdl");
+        
+        if (exists(file)) return parseIntent(file);
+        
+        // Try 'default' sibling
+        if (parts.back != "default") {
+            string defaultFile = buildPath(rulesDir, buildPath(parts[0..$-1]), "default", intent ~ ".sdl");
+            if (exists(defaultFile)) return parseIntent(defaultFile);
+        }
+        
+        parts = parts[0..$-1];
+    }
+    return "";
+}
+
+string parseIntent(string file) {
+    try {
+        Tag root = parseFile(file);
+        foreach (tag; root.tags) {
+            if (tag.name == "mapping" || tag.name == "path" || tag.name == "value") {
+                return tag.values[0].get!string;
+            }
+        }
+    } catch (Exception e) {
+        writeln("Error parsing intent SDL: ", e.msg);
+    }
+    return "";
 }

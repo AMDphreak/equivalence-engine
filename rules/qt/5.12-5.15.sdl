@@ -1,0 +1,3 @@
+ruleset "5.12 to 5.15" {
+    replace "OLD_512" "NEW_515"
+}
