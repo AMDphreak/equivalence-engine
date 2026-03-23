@@ -78,5 +78,52 @@ evolution-engine --rules-repo https://github.com/AMDphreak/evolution-rules-code 
 | Perform a dry run without modifying files.
 |===
 
+== Contributing Rules
+
+New rules should be added to the appropriate `rules/<type>/<lang>/<library>/` subdirectory in the respective rules repository.
+
+=== Rules Repository Workflow
+
+To ensure rules are easily consumable by the Evolution Engine in CI environments, each rules repository should implement a **Release Workflow**. This workflow packages the `rules/` directory into versioned archives (`.zip` and `.tar.gz`) for ingestion by the engine.
+
+.Example Release Workflow (`.github/workflows/release.yml`)
+[source,yaml]
+----
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Archives
+        run: |
+          mkdir -p dist
+          tar -czf dist/repo-name-${{ github.ref_name }}.tar.gz rules/
+          zip -r dist/repo-name-${{ github.ref_name }}.zip rules/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rules-archives
+          path: dist/*
+  release:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: rules-archives
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.tar.gz
+            *.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+----
+
 == License
 MIT License. Copyright (c) 2026 AMDphreak.
