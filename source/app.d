@@ -150,6 +150,81 @@ int main(string[] args) {
         return 0;
     }
 
+    // Archive Support (Zip/Tar.gz)
+    string actualRulesDir = rulesDir;
+    string[] pathParts = rulesDir.split(dirSeparator);
+    string archivePath = "";
+    string subPath = "";
+
+    foreach (i, part; pathParts) {
+        if (part.endsWith(".zip") || part.endsWith(".tar.gz") || part.endsWith(".tgz")) {
+            archivePath = pathParts[0 .. i+1].join(dirSeparator);
+            subPath = pathParts[i+1 .. $].join(dirSeparator);
+            break;
+        }
+    }
+
+    if (archivePath != "") {
+        string tempRoot = buildPath(tempDir(), "evolution-engine-cache");
+        // Use a hash of the archive path to avoid collisions but persist if needed
+        import std.digest;
+        import std.digest.md;
+        string hash = archivePath.digest!MD5.toHexString();
+        string extractDir = buildPath(tempRoot, hash);
+
+        if (!exists(extractDir)) {
+            mkdirRecurse(extractDir);
+            if (archivePath.endsWith(".zip")) {
+                import std.zip;
+                auto zip = new ZipArchive(read(archivePath));
+                foreach (name, am; zip.directory) {
+                    zip.expand(am);
+                    string target = buildPath(extractDir, name);
+                    if (name.endsWith("/") || name.endsWith("\\")) {
+                        if (!exists(target)) mkdirRecurse(target);
+                    } else {
+                        string d = dirName(target);
+                        if (!exists(d)) mkdirRecurse(d);
+                        std.file.write(target, am.expandedData);
+                    }
+                }
+            } else {
+                // Tar.gz
+                auto pid = spawnProcess(["tar", "-xzf", archivePath, "-C", extractDir]);
+                if (wait(pid) != 0) {
+                    writeln("Error extracting archive: ", archivePath);
+                    return 1;
+                }
+            }
+        }
+        
+        // Handle the GitHub-style top-level folder if it exists and subPath is empty
+        if (subPath == "") {
+            auto entries = dirEntries(extractDir, SpanMode.shallow).array;
+            if (entries.length == 1 && entries[0].isDir) {
+                actualRulesDir = entries[0].name;
+            } else {
+                actualRulesDir = extractDir;
+            }
+        } else {
+            actualRulesDir = buildPath(extractDir, subPath);
+        }
+        
+        // Auto-append 'rules' if it exists and we are at the repo root
+        if (exists(buildPath(actualRulesDir, "rules")) && !exists(buildPath(actualRulesDir, "lib_dir.sdl"))) {
+             // If there's a rules folder but no top-level intent, assume the rules are in the folder
+             // (unless we are in code domain and there are .sdl files in the root)
+             bool hasSdlInRoot = false;
+             foreach(e; dirEntries(actualRulesDir, SpanMode.shallow)) if(e.name.endsWith(".sdl")) { hasSdlInRoot = true; break; }
+             
+             if (!hasSdlInRoot) {
+                 actualRulesDir = buildPath(actualRulesDir, "rules");
+             }
+        }
+    }
+    
+    rulesDir = actualRulesDir;
+
     // Handle remote rules repository
     string tmpRulesDir = ".evolution-rules-tmp";
 
