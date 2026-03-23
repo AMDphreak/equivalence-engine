@@ -1,3 +1,0 @@
-name = "ubuntu"
-inherits = ["debian"]
-family = "linux"

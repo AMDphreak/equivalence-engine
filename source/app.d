@@ -284,19 +284,23 @@ string resolveIntent(string rulesDir, string context, string intent) {
     
     // Check local, then default sibling, then up
     while (parts.length > 0) {
-        string dir = buildPath(parts);
-        string file = buildPath(rulesDir, dir, intent ~ ".sdl");
+        string subPath = parts.join("/");
+        string fullPath = buildPath(rulesDir, subPath, intent ~ ".sdl");
+        if (exists(fullPath)) return parseIntent(fullPath);
         
-        if (exists(file)) return parseIntent(file);
+        string defaultPath = buildPath(rulesDir, subPath, "default", intent ~ ".sdl");
+        if (exists(defaultPath)) return parseIntent(defaultPath);
         
-        // Try 'default' sibling
-        if (parts.back != "default") {
-            string defaultFile = buildPath(rulesDir, buildPath(parts[0..$-1]), "default", intent ~ ".sdl");
-            if (exists(defaultFile)) return parseIntent(defaultFile);
-        }
-        
-        parts = parts[0..$-1];
+        parts = parts[0 .. $-1];
     }
+    
+    // Final fallback: root of rulesDir, then rulesDir/default
+    string rootPath = buildPath(rulesDir, intent ~ ".sdl");
+    if (exists(rootPath)) return parseIntent(rootPath);
+    
+    string rootDefaultPath = buildPath(rulesDir, "default", intent ~ ".sdl");
+    if (exists(rootDefaultPath)) return parseIntent(rootDefaultPath);
+    
     return "";
 }
 
