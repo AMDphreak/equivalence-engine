@@ -171,7 +171,7 @@ int main(string[] args) {
         actualRulesDir = downloadPath;
     }
 
-    // 2. Local Archive Support (Extra extraction step)
+    // 2. Local Archive Support
     string archivePath = "";
     string subPath = "";
     string[] pathParts = actualRulesDir.split(dirSeparator);
@@ -204,15 +204,13 @@ int main(string[] args) {
                 if (wait(pid) != 0) { writeln("Error extracting archive."); return 1; }
             }
         }
-        
-        // Finalize extraction dir
         if (subPath == "") {
             auto entries = dirEntries(extractDir, SpanMode.shallow).filter!(e => e.isDir).array;
             actualRulesDir = (entries.length == 1) ? entries[0].name : extractDir;
         } else actualRulesDir = buildPath(extractDir, subPath);
     }
 
-    // 3. Universal "Smart Dive" (for both archives and local folders)
+    // 3. Universal "Smart Dive"
     if (exists(buildPath(actualRulesDir, "rules"))) {
          bool looksLikeRuleset = false;
          if (domain == "filesystem") {
@@ -250,19 +248,17 @@ int main(string[] args) {
         string intent = args.length > 1 ? args[1] : "";
         if (toContext == "") { writeln("Error: --to (context) required."); return 1; }
         if (intent == "") { writeln("Error: intent name required."); return 1; }
-        ruleFiles = resolveIntent(buildPath(rulesDir, "filesystem"), toContext, intent);
+        ruleFiles = resolveIntent(rulesDir, toContext, intent);
     } else {
         // Code domain
         if (fromVer != "" && toVer != "") {
-            string codeRulesRoot = buildPath(rulesDir, "code");
-            if (!exists(codeRulesRoot)) codeRulesRoot = rulesDir; // Fallback
-            string searchDir = buildPath(codeRulesRoot, library);
+            string searchDir = buildPath(rulesDir, library);
             ruleFiles = findMigrationPath(searchDir, fromVer, toVer);
         }
     }
 
     if (ruleFiles.length == 0) {
-        writeln("No rules found for ", domain, (library != "" ? " (" ~ library ~ ")" : ""), " from ", fromVer, " to ", toVer);
+        writeln("No rules found for ", domain, (library != "" ? " (" ~ library ~ ")" : ""), " from ", fromVer, " to ", toVer, " in ", rulesDir);
         return 1;
     }
 
@@ -311,12 +307,9 @@ void processFile(string fileName, MigrationEngine engine, bool dryRun, string ou
 string[] resolveIntent(string rulesDir, string toContext, string intent) {
     string[] contextPath = toContext.split("/");
     string[] bestFiles;
-    
-    // Check for global intent fallback first (at root of filesystem rules)
     string globalIntentPath = buildPath(rulesDir, intent ~ ".sdl");
     string defaultGlobalPath = buildPath(rulesDir, "default", intent ~ ".sdl");
     
-    // Traverse down the context hierarchy
     string currentDir = rulesDir;
     foreach (part; contextPath) {
         currentDir = buildPath(currentDir, part);
@@ -330,6 +323,5 @@ string[] resolveIntent(string rulesDir, string toContext, string intent) {
         if (exists(globalIntentPath)) return [globalIntentPath];
         if (exists(defaultGlobalPath)) return [defaultGlobalPath];
     }
-    
     return bestFiles;
 }
