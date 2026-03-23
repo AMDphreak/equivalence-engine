@@ -83,6 +83,23 @@ The Evolution Adaptation Ecosystem is organized into three distinct tiers to sep
 
 The specialized `qt-upgrader` project is now obsolete as all its features have been absorbed into the core `evolution-engine`. You can now use a single binary for all evolution and equivalence tasks.
 
+---
+
+## 6. Design Evolution & Research
+
+### Filesystem Equivalence Mapping
+The expansion into filesystem mappings was researched to solve the "intent -> actual path" problem across fragmented Linux/UNIX families.
+
+#### Key Architectural Decisions:
+- **Linear Evolution vs. DAG**: While distros form a taxonomy (Debian -> Ubuntu), the engine treats them as versioned rule sets in a specific domain.
+- **Fallback Resolution**: Instead of complex inheritance, the engine uses a directory-based fallback (e.g., `ubuntu/22.04` -> `ubuntu/default` -> `debian/default`) to maintain simplicity and clarity.
+- **Intent Vocabulary**: Abstract intents (like `log_dir`) are defined as schemas, while distros provide concrete implementations.
+
+### Domain Generalization
+The engine was generalized by introducing a **domain discriminator**. This allows the same traversal mechanism to handle both time-based evolution (code versions) and environment-based variation (distros), without increasing conceptual complexity.
+
+---
+
 ## Verification Summary
 
 I verified the following:
@@ -91,3 +108,4 @@ I verified the following:
 - [x] **Output Redirect**: Confirmed `--out-dir` correctly reconstructs the project tree in the target folder.
 - [x] **Filesystem Fallback**: Confirmed `lib_dir` resolves correctly by walking up the distro hierarchy.
 - [x] **Qt Migration**: Confirmed `PyQt5` -> `PyQt6` rules still apply correctly under the new architecture.
+- [x] **Repository Cleanup**: Removed tracked `bin/`, redundant rules, and organized tests into a dedicated suite.

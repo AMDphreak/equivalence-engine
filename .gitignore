@@ -2,6 +2,7 @@
 .DS_Store
 *.swp
 *.bak
+*.txt
 
 # D Language
 /.dub/
@@ -10,14 +11,15 @@
 /evolution-engine.exe
 /evolution-engine.pdb
 
-# Old builds (from previous names)
-/qt-evolution-adapter
-/qt-evolution-adapter.exe
-/qt-evolution-adapter.pdb
-/qt-upgrader
-/qt-upgrader.exe
-/qt-upgrader.pdb
+# Project-specific
+/bin/
 
 # Python artifacts (legacy)
 /__pycache__/
 *.pyc
+
+# Old builds (from previous names)
+/qt-evolution-adapter
+/qt-evolution-adapter.*
+/qt-upgrader
+/qt-upgrader.*
