@@ -12,6 +12,7 @@
 !/CHANGELOG.md
 !/README.adoc
 !/dub.sdl
+!/dub.selections.json
 !/walkthrough.md
 !/changelog-details/
 !/changelog-details/**

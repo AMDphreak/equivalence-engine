@@ -6,6 +6,7 @@ The core engine for the Equivalence Adaptation Ecosystem. This tool provides a p
 * link:https://github.com/AMDphreak/equivalence-engine-action[Equivalence Engine Action] — Modular GitHub Action to automate code adaptation in CI pipelines.
 * link:https://github.com/AMDphreak/equivalence-rules-code[Equivalence Rules: Code] — Rules for migrating source code between library versions (e.g., PyQt5 to PyQt6).
 * link:https://github.com/AMDphreak/equivalence-rules-filesystem[Equivalence Rules: Filesystem] — Rules for cross-OS path mapping and equivalency.
+* link:https://github.com/AMDphreak/libequivalence[libequivalence] — D library (rule engine and migration-path resolution) used by this CLI.
 
 == Features
 
