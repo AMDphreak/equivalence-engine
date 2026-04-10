@@ -21,16 +21,16 @@ jobs:
         run: dub build -b release
       - name: Rename binary (Windows)
         if: matrix.os == 'windows-latest'
-        run: Move-Item bin/evolution-engine.exe bin/evolution-engine-${{ matrix.os }}.exe
+        run: Move-Item bin/equivalence-engine.exe bin/equivalence-engine-${{ matrix.os }}.exe
         shell: pwsh
       - name: Rename binary (Unix)
         if: matrix.os != 'windows-latest'
-        run: mv bin/evolution-engine bin/evolution-engine-${{ matrix.os }}
+        run: mv bin/equivalence-engine bin/equivalence-engine-${{ matrix.os }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: evolution-engine-${{ matrix.os }}
-          path: bin/evolution-engine-${{ matrix.os }}*
+          name: equivalence-engine-${{ matrix.os }}
+          path: bin/equivalence-engine-${{ matrix.os }}*
 
   release:
     name: Create GitHub Release
@@ -62,7 +62,7 @@ jobs:
       - name: Winget Releaser
         uses: vedantmgoyal9/winget-releaser@v2
         with:
-          identifier: AMDphreak.EvolutionEngine
+          identifier: AMDphreak.EquivalenceEngine
           token: ${{ secrets.WINGET_TOKEN }}
 
   publish-homebrew:
@@ -75,10 +75,10 @@ jobs:
       - name: Update Homebrew Formula
         uses: mislav/bump-homebrew-formula-action@v3
         with:
-          formula-name: evolution-engine
+          formula-name: equivalence-engine
           homebrew-tap: AMDphreak/homebrew-tap
-          download-url: https://github.com/AMDphreak/evolution-engine/releases/download/${{ github.ref_name }}/evolution-engine-macos-latest
+          download-url: https://github.com/AMDphreak/equivalence-engine/releases/download/${{ github.ref_name }}/equivalence-engine-macos-latest
           commit-message: |
-            evolution-engine ${{ github.ref_name }}
+            equivalence-engine ${{ github.ref_name }}
         env:
           COMMITTER_TOKEN: ${{ secrets.WINGET_TOKEN }}

@@ -8,109 +8,54 @@ import std.algorithm;
 import std.container;
 import sdlang;
 import std.process;
+import std.uni;
 
-struct Rule {
-    string type;
-    string target;
-    string replacement;
-}
+// Import from our new library
+import equivalence.engine;
+import equivalence.path;
 
-class MigrationEngine {
-    Rule[] rules;
+/**
+ * CLI wrapper for the Equivalence Engine
+ */
+class EquivalenceCLI {
+    RuleEngine engine;
 
-    void loadRules(string sdlPath) {
-        if (!exists(sdlPath)) {
-            writeln("Rules file not found: ", sdlPath);
-            return;
-        }
+    this() {
+        engine = new RuleEngine();
+    }
 
-        try {
-            Tag root = parseFile(sdlPath);
-            foreach (tag; root.tags) {
-                if (tag.name == "ruleset" || tag.name == "rule") {
-                    foreach (ruleTag; tag.tags) {
-                        Rule r;
-                        r.type = ruleTag.name;
-                        r.target = ruleTag.values[0].get!string;
-                        r.replacement = ruleTag.values[1].get!string;
-                        rules ~= r;
+    void printSummary(string rulesDir) {
+        writeln("\n=======================================================");
+        writeln("              EQUIVALENCE SUMMARY");
+        writeln("=======================================================");
+        stdout.flush();
+
+        if (engine.rules.length == 0) {
+            writeln("No rules were loaded.");
+        } else {
+            if (engine.findings.length == 0) {
+                writeln("SUCCESS: No manual actions required.");
+            } else {
+                auto keys = engine.findings.keys;
+                keys.sort();
+                foreach (file; keys) {
+                    writeln("\nFile: ", file);
+                    foreach (f; engine.findings[file]) {
+                        writeln("  [", f.type, "] ", f.message);
                     }
                 }
             }
-        } catch (Exception e) {
-            writeln("Error parsing SDL rules: ", e.msg);
         }
-    }
-
-    string applyRules(string content) {
-        foreach (rule; rules) {
-            if (rule.type == "replace") {
-                content = content.replace(rule.target, rule.replacement);
-            } else if (rule.type == "regex") {
-                auto re = regex(rule.target);
-                content = replaceAll(content, re, rule.replacement);
-            }
+        
+        writeln("\n-------------------------------------------------------");
+        writeln("Ruleset Source:     ", rulesDir);
+        writeln("Report Engine Bug:  https://github.com/amdphreak/equivalence-engine/issues");
+        if (engine.currentRepo != "") {
+            writeln("Report Ruleset Bug: ", engine.currentRepo, "/issues");
         }
-        return content;
+        writeln("=======================================================\n");
+        stdout.flush();
     }
-}
-
-string[] findMigrationPath(string rulesDir, string fromVer, string toVer) {
-    struct Edge {
-        string to;
-        string file;
-    }
-    Edge[][string] graph;
-
-    if (!exists(rulesDir)) return [];
-
-    foreach (DirEntry entry; dirEntries(rulesDir, SpanMode.depth)) {
-        if (entry.isFile && entry.name.endsWith(".sdl")) {
-            auto base = baseName(entry.name, ".sdl");
-            auto parts = base.split("-");
-            if (parts.length == 2) {
-                graph[parts[0]] ~= Edge(parts[1], entry.name);
-            }
-        }
-    }
-
-    // BFS to find shortest path
-    string[][string] parent;
-    string[][string] parentFile;
-    DList!string queue;
-    queue.insertBack(fromVer);
-    bool[string] visited;
-    visited[fromVer] = true;
-
-    while (!queue.empty) {
-        auto current = queue.front;
-        queue.removeFront();
-
-        if (current == toVer) {
-            // Reconstruct path
-            string[] path;
-            auto curr = toVer;
-            while (curr != fromVer) {
-                path ~= parentFile[curr][0];
-                curr = parent[curr][0];
-            }
-            reverse(path);
-            return path;
-        }
-
-        if (current in graph) {
-            foreach (edge; graph[current]) {
-                if (edge.to !in visited) {
-                    visited[edge.to] = true;
-                    parent[edge.to] ~= current;
-                    parentFile[edge.to] ~= edge.file;
-                    queue.insertBack(edge.to);
-                }
-            }
-        }
-    }
-
-    return [];
 }
 
 int main(string[] args) {
@@ -121,7 +66,7 @@ int main(string[] args) {
     string fromVer = "";
     string toVer = "";
     string library = "";
-    string extensions = ".py,.cpp,.h";
+    string extensions = ".py,.cpp,.h,.js,.ts,.astro";
     string domain = "code";
     string outDir = "";
     bool inPlace = false;
@@ -147,14 +92,14 @@ int main(string[] args) {
     if (outDir != "") dryRun = false;
 
     if (helpInformation.helpWanted) {
-        defaultGetoptPrinter("Evolution Engine", helpInformation.options);
+        defaultGetoptPrinter("Equivalence Engine", helpInformation.options);
         return 0;
     }
 
-    // 1. Remote URL Support
+    // 1. Remote URL Support (Archives)
     string actualRulesDir = rulesDir;
     if (rulesDir.startsWith("http://") || rulesDir.startsWith("https://")) {
-        string tempRoot = buildPath(tempDir(), "evolution-engine-cache");
+        string tempRoot = buildPath(tempDir(), "equivalence-engine-cache");
         import std.digest.md;
         string urlHash = rulesDir.digest!MD5.toHexString().idup;
         string downloadPath;
@@ -164,9 +109,9 @@ int main(string[] args) {
 
         if (!exists(downloadPath)) {
             mkdirRecurse(tempRoot);
-            import std.net.curl;
-            writeln("Downloading: ", rulesDir);
-            download(rulesDir, downloadPath);
+            // Use shell-based download if libcurl is missing
+            auto pid = spawnProcess(["curl", "-L", "-o", downloadPath, rulesDir]);
+            if (wait(pid) != 0) { writeln("Error downloading rules."); return 1; }
         }
         actualRulesDir = downloadPath;
     }
@@ -184,7 +129,7 @@ int main(string[] args) {
     }
 
     if (archivePath != "") {
-        string tempRoot = buildPath(tempDir(), "evolution-engine-cache");
+        string tempRoot = buildPath(tempDir(), "equivalence-engine-cache");
         import std.digest.md;
         string hash = archivePath.digest!MD5.toHexString();
         string extractDir = buildPath(tempRoot, hash);
@@ -224,7 +169,7 @@ int main(string[] args) {
     rulesDir = actualRulesDir;
 
     // 4. Remote Repo Support
-    string tmpRulesDir = ".evolution-rules-tmp";
+    string tmpRulesDir = ".equivalence-rules-tmp";
     auto cleanup = {
         if (exists(tmpRulesDir)) {
             version(Windows) executeShell("rmdir /s /q " ~ tmpRulesDir);
@@ -234,13 +179,20 @@ int main(string[] args) {
 
     if (rulesRepo != "") {
         cleanup();
-        auto cloneCmd = executeShell("git clone --depth 1 -b " ~ rulesRepoBranch ~ " " ~ rulesRepo ~ " " ~ tmpRulesDir);
-        if (cloneCmd.status != 0) { writeln("Failed to clone rules repository."); return 1; }
-        rulesDir = tmpRulesDir;
+        try {
+            import devcentr.repoget;
+            auto provider = getProvider(rulesRepo);
+            writeln("Cloning rules from ", rulesRepo, "...");
+            provider.clone(rulesRepo, tmpRulesDir);
+            rulesDir = tmpRulesDir;
+        } catch (Exception e) {
+            writeln("Failed to clone rules repository: ", e.msg);
+            return 1;
+        }
     }
     scope(exit) if (rulesRepo != "") cleanup();
 
-    auto engine = new MigrationEngine();
+    auto cli = new EquivalenceCLI();
     string[] ruleFiles;
 
     if (domain == "filesystem") {
@@ -262,10 +214,31 @@ int main(string[] args) {
         return 1;
     }
 
-    if (domain == "code") writeln("Migration path: ", fromVer, " -> ", toVer, " using ", ruleFiles);
-    else writeln("Resolved: ", ruleFiles);
-
-    foreach (f; ruleFiles) engine.loadRules(f);
+    if (domain == "code") {
+        writeln("Migration path: ", fromVer, " -> ", toVer);
+        string currentVer = fromVer;
+        foreach (f; ruleFiles) {
+            auto base = baseName(f, ".sdl");
+            auto rb = base.split("-");
+            if (rb.length == 2) {
+                if (currentVer != rb[0]) {
+                    writeln(" - Version ", currentVer, " recognized; mapping to ", rb[0], "-", rb[1], ".sdl via aliasing");
+                }
+                writeln(" - Applying rules from: ", f);
+                currentVer = rb[1];
+            } else {
+                writeln(" - Applying rules from: ", f);
+            }
+            cli.engine.loadRules(f);
+        }
+        writeln("Engine loaded total rules: ", cli.engine.rules.length);
+    } else {
+        writeln("Resolved: ", ruleFiles);
+        foreach (f; ruleFiles) {
+            cli.engine.loadRules(f);
+        }
+        writeln("Engine loaded total rules: ", cli.engine.rules.length);
+    }
 
     auto extList = extensions.split(",");
     if (!exists(path)) { writeln("Path does not exist: ", path); return 1; }
@@ -273,19 +246,20 @@ int main(string[] args) {
     if (isDir(path)) {
         foreach (DirEntry entry; dirEntries(path, SpanMode.depth)) {
             if (entry.isFile && extList.canFind(extension(entry.name))) {
-                processFile(entry.name, engine, dryRun, outDir, path);
+                processFile(entry.name, cli.engine, dryRun, outDir, path);
             }
         }
     } else {
-        processFile(path, engine, dryRun, outDir, dirName(path));
+        processFile(path, cli.engine, dryRun, outDir, dirName(path));
     }
 
+    cli.printSummary(rulesDir);
     return 0;
 }
 
-void processFile(string fileName, MigrationEngine engine, bool dryRun, string outDir, string baseRoot) {
+void processFile(string fileName, RuleEngine engine, bool dryRun, string outDir, string baseRoot) {
     auto content = readText(fileName);
-    auto newContent = engine.applyRules(content);
+    auto newContent = engine.applyRules(content, fileName);
 
     if (newContent != content) {
         if (dryRun) {
@@ -302,26 +276,4 @@ void processFile(string fileName, MigrationEngine engine, bool dryRun, string ou
             writeln("Updated: ", targetPath);
         }
     }
-}
-
-string[] resolveIntent(string rulesDir, string toContext, string intent) {
-    string[] contextPath = toContext.split("/");
-    string[] bestFiles;
-    string globalIntentPath = buildPath(rulesDir, intent ~ ".sdl");
-    string defaultGlobalPath = buildPath(rulesDir, "default", intent ~ ".sdl");
-    
-    string currentDir = rulesDir;
-    foreach (part; contextPath) {
-        currentDir = buildPath(currentDir, part);
-        string specific = buildPath(currentDir, intent ~ ".sdl");
-        string def = buildPath(currentDir, "default", intent ~ ".sdl");
-        if (exists(specific)) bestFiles = [specific];
-        else if (exists(def)) bestFiles = [def];
-    }
-    
-    if (bestFiles.length == 0) {
-        if (exists(globalIntentPath)) return [globalIntentPath];
-        if (exists(defaultGlobalPath)) return [defaultGlobalPath];
-    }
-    return bestFiles;
 }

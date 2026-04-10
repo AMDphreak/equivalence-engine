@@ -1,6 +1,6 @@
-# Walkthrough - Unified Evolution Engine
+# Walkthrough — Equivalence Engine
 
-The `evolution-engine` has been generalized into a multi-domain adaptation toolkit. It now handles both **Source Code Evolution** and **Filesystem Equivalence Mapping**, with a safety-first non-destructive default.
+The `equivalence-engine` binary is a multi-domain adaptation toolkit. It handles both **source code migrations** (version-to-version) and **filesystem equivalence mapping**, with a safety-first non-destructive default.
 
 ## 1. Safety First: Non-Destructive by Default
 
@@ -8,7 +8,7 @@ The engine now defaults to a **dry-run** mode. No files are modified unless expl
 
 ```powershell
 # This will only print what WOULD happen
-evolution-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0
+equivalence-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0
 ```
 
 ### Destructive/Output Options
@@ -27,7 +27,7 @@ This is the original functionality of the engine, used for migrating between lib
 
 ```powershell
 # Upgrade Qt5 to Qt6 in-place
-evolution-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0 --in-place
+equivalence-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0 --in-place
 ```
 
 ---
@@ -42,7 +42,7 @@ A new intent-based mapping system for cross-distro path resolution.
 
 ```powershell
 # Resolve where libraries are on Ubuntu Jammy
-evolution-engine --domain filesystem --to linux/ubuntu/22.04 lib_dir
+equivalence-engine --domain filesystem --to linux/ubuntu/22.04 lib_dir
 # Output: lib_dir -> /usr/lib/x86_64-linux-gnu
 ```
 
@@ -60,28 +60,28 @@ family = "linux"
 
 ## 4. Ecosystem Architecture
 
-The Evolution Adaptation Ecosystem is organized into three distinct tiers to separate logic, execution, and content:
+The Equivalence Adaptation Ecosystem is organized into three distinct tiers to separate logic, execution, and content:
 
-1. **The Engine** ([`evolution-engine`](https://github.com/AMDphreak/evolution-engine)):
+1. **The Engine** ([`equivalence-engine`](https://github.com/AMDphreak/equivalence-engine)):
    - **Role**: Core logic and binary.
    - **Responsibility**: Resolves shortest migration paths, parses SDL rules, and performs file transformations.
    - **Usage**: CLI tool for local development and base for CI.
 
-2. **The Action** ([`evolution-engine-action`](https://github.com/AMDphreak/evolution-engine-action)):
+2. **The Action** ([`equivalence-engine-action`](https://github.com/AMDphreak/equivalence-engine-action)):
    - **Role**: CI/CD Wrapper.
    - **Responsibility**: Facilitates running the engine in GitHub Actions. Automates D-language setup and ruleset checkouts.
    - **Usage**: Included in `.github/workflows/*.yml`.
 
-3. **Content Repositories** (e.g., [`evolution-rules-qt`](https://github.com/AMDphreak/evolution-rules-qt)):
+3. **Content Repositories** (e.g., [`equivalence-rules-code`](https://github.com/AMDphreak/equivalence-rules-code)):
    - **Role**: Rule Definitions.
    - **Responsibility**: Contains the specific SDL files for a domain (Qt, Linux Filesystem, etc.).
-   - **Usage**: Passed to the Engine via `--rules-repo` or `--rules-dir`.
+   - **Usage**: Passed to the engine via `--rules-repo` or `--rules-dir`.
 
 ---
 
 ## 5. Consolidation Notice
 
-The specialized `qt-upgrader` project is now obsolete as all its features have been absorbed into the core `evolution-engine`. You can now use a single binary for all evolution and equivalence tasks.
+The specialized `qt-upgrader` project is now obsolete as all its features have been absorbed into the core `equivalence-engine`. You can now use a single binary for migrations and equivalence tasks.
 
 ---
 
@@ -91,12 +91,12 @@ The specialized `qt-upgrader` project is now obsolete as all its features have b
 The expansion into filesystem mappings was researched to solve the "intent -> actual path" problem across fragmented Linux/UNIX families.
 
 #### Key Architectural Decisions:
-- **Linear Evolution vs. DAG**: While distros form a taxonomy (Debian -> Ubuntu), the engine treats them as versioned rule sets in a specific domain.
+- **Linear migrations vs. DAG**: While distros form a taxonomy (Debian -> Ubuntu), the engine treats them as versioned rule sets in a specific domain.
 - **Fallback Resolution**: Instead of complex inheritance, the engine uses a directory-based fallback (e.g., `ubuntu/22.04` -> `ubuntu/default` -> `debian/default`) to maintain simplicity and clarity.
 - **Intent Vocabulary**: Abstract intents (like `log_dir`) are defined as schemas, while distros provide concrete implementations.
 
 ### Domain Generalization
-The engine was generalized by introducing a **domain discriminator**. This allows the same traversal mechanism to handle both time-based evolution (code versions) and environment-based variation (distros), without increasing conceptual complexity.
+The engine was generalized by introducing a **domain discriminator**. This allows the same traversal mechanism to handle both time-based code migrations and environment-based variation (distros), without increasing conceptual complexity.
 
 ---
 

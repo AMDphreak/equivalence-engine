@@ -3,7 +3,7 @@
 Detailed context for renaming the "Publish Packages" GitHub Actions job to "Publish Winget Package".
 
 ## Context
-The Evolution Engine repository uses several CI jobs to handle publishing across different platforms.
+The Equivalence Engine repository uses several CI jobs to handle publishing across different platforms.
 
 Previously, the job for Windows package publishing was named "Publish Packages", which was overly broad and implied it might be a parent or aggregator for other publishing jobs like "Publish Homebrew".
 

@@ -1,5 +1,5 @@
 # Build engine if needed
-if (!(Test-Path "../bin/evolution-engine.exe")) {
+if (!(Test-Path "../bin/equivalence-engine.exe")) {
     Write-Host "Rebuilding engine..." -ForegroundColor Cyan
     Push-Location ..
     dub build -b release
@@ -8,7 +8,7 @@ if (!(Test-Path "../bin/evolution-engine.exe")) {
 
 # Download rules
 Write-Host "Downloading latest rules..." -ForegroundColor Cyan
-$rulesUrl = "https://github.com/AMDphreak/evolution-rules-code/archive/refs/tags/latest.zip"
+$rulesUrl = "https://github.com/AMDphreak/equivalence-rules-code/archive/refs/tags/latest.zip"
 $zipPath = "latest.zip"
 $extractPath = "rules_code"
 
@@ -20,6 +20,6 @@ Remove-Item $zipPath
 $rulesDir = (Get-ChildItem -Directory $extractPath).FullName + "/rules/qt"
 
 # Run test
-$engine = "../bin/evolution-engine.exe"
-Write-Host "Running evolution-engine test..." -ForegroundColor Green
+$engine = "../bin/equivalence-engine.exe"
+Write-Host "Running equivalence-engine test..." -ForegroundColor Green
 & $engine --path . --rules-dir $rulesDir --from 5.15 --to 6.0

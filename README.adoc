@@ -1,11 +1,11 @@
-The core engine for the Evolution Adaptation Ecosystem. This tool provides a powerful, version-aware D-based engine for migrating source code between library and framework versions using SDL-based rulesets.
+The core engine for the Equivalence Adaptation Ecosystem. This tool provides a powerful, version-aware D-based engine for migrating source code between library and framework versions using SDL-based rulesets.
 
 == Ecosystem
 
-* link:https://github.com/AMDphreak/evolution-engine[Evolution Engine] — The core binary that resolves and applies evolutionary rules.
-* link:https://github.com/AMDphreak/evolution-engine-action[Evolution Engine Action] — Modular GitHub Action to automate code evolution in CI pipelines.
-* link:https://github.com/AMDphreak/evolution-rules-code[Evolution Rules: Code] — Rules for migrating source code between library versions (e.g., PyQt5 to PyQt6).
-* link:https://github.com/AMDphreak/evolution-rules-filesystem[Evolution Rules: Filesystem] — Rules for cross-OS path mapping and equivalency.
+* link:https://github.com/AMDphreak/equivalence-engine[Equivalence Engine] — The core binary that resolves and applies migration and equivalence rules.
+* link:https://github.com/AMDphreak/equivalence-engine-action[Equivalence Engine Action] — Modular GitHub Action to automate code adaptation in CI pipelines.
+* link:https://github.com/AMDphreak/equivalence-rules-code[Equivalence Rules: Code] — Rules for migrating source code between library versions (e.g., PyQt5 to PyQt6).
+* link:https://github.com/AMDphreak/equivalence-rules-filesystem[Equivalence Rules: Filesystem] — Rules for cross-OS path mapping and equivalency.
 
 == Features
 
@@ -20,13 +20,13 @@ The core engine for the Evolution Adaptation Ecosystem. This tool provides a pow
 [source,bash]
 ----
 brew tap AMDphreak/homebrew-tap
-brew install evolution-engine
+brew install equivalence-engine
 ----
 
 === Winget (Windows)
 [source,powershell]
 ----
-winget install AMDphreak.EvolutionEngine
+winget install AMDphreak.EquivalenceEngine
 ----
 
 == Usage
@@ -36,7 +36,7 @@ To migrate a project from version 5.15 to 6.0 using local rules:
 
 [source,bash]
 ----
-evolution-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0
+equivalence-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0
 ----
 
 === Remote Ruleset (Cloud Rules)
@@ -44,7 +44,7 @@ You can directly use a remote rules repository. The engine will clone the repo, 
 
 [source,bash]
 ----
-evolution-engine --rules-repo https://github.com/AMDphreak/evolution-rules-code --from 5.15 --to 6.0 --path ./src
+equivalence-engine --rules-repo https://github.com/AMDphreak/equivalence-rules-code --from 5.15 --to 6.0 --path ./src
 ----
 
 === CLI Options
@@ -84,7 +84,7 @@ New rules should be added to the appropriate `rules/<type>/<lang>/<library>/` su
 
 === Rules Repository Workflow
 
-To ensure rules are easily consumable by the Evolution Engine in CI environments, each rules repository should implement a **Release Workflow**. This workflow packages the `rules/` directory into versioned archives (`.zip` and `.tar.gz`) for ingestion by the engine.
+To ensure rules are easily consumable by the Equivalence Engine in CI environments, each rules repository should implement a **Release Workflow**. This workflow packages the `rules/` directory into versioned archives (`.zip` and `.tar.gz`) for ingestion by the engine.
 
 .Example Release Workflow (`.github/workflows/release.yml`)
 [source,yaml]

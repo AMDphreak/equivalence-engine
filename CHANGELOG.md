@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Renamed branding and docs from Evolution Engine to **Equivalence Engine**; updated ecosystem links, release artifact names, Homebrew formula (`equivalence-engine`), and Winget identifier (`AMDphreak.EquivalenceEngine`). See [2026-04-10 - Rename to Equivalence Engine](changelog-details/2026-04-10%20-%20Rename%20to%20Equivalence%20Engine.md).
+
 ## [1.1.1] - 2026-03-27
 
 ### Changed
