@@ -1,4 +1,4 @@
-# Walkthrough — Equivalence Engine
+# Walkthrough — ≡quivalence ≡ngine
 
 The `equivalence-engine` binary is a multi-domain adaptation toolkit. It handles both **source code migrations** (version-to-version) and **filesystem equivalence mapping**, with a safety-first non-destructive default.
 

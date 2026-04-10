@@ -1,4 +1,4 @@
-= E≡quivalence E≡ngine
+= ≡quivalence ≡ngine
 
 image:https://github.com/AMDphreak/equivalence-engine/actions/workflows/ci.yml/badge.svg[CI status,link=https://github.com/AMDphreak/equivalence-engine/actions/workflows/ci.yml]
 
@@ -6,7 +6,7 @@ The core engine for the Equivalence Adaptation Ecosystem. This tool provides a p
 
 == Ecosystem
 
-* link:https://github.com/AMDphreak/equivalence-engine[E≡quivalence E≡ngine] — The core binary that resolves and applies migration and equivalence rules.
+* link:https://github.com/AMDphreak/equivalence-engine[≡quivalence ≡ngine] — The core binary that resolves and applies migration and equivalence rules.
 * link:https://github.com/AMDphreak/equivalence-engine-action[Equivalence Engine Action] — Modular GitHub Action to automate code adaptation in CI pipelines.
 * link:https://github.com/AMDphreak/equivalence-rules-code[Equivalence Rules: Code] — Rules for migrating source code between library versions (e.g., PyQt5 to PyQt6).
 * link:https://github.com/AMDphreak/equivalence-rules-filesystem[Equivalence Rules: Filesystem] — Rules for cross-OS path mapping and equivalency.
@@ -89,7 +89,7 @@ New rules should be added to the appropriate `rules/<type>/<lang>/<library>/` su
 
 === Rules Repository Workflow
 
-To ensure rules are easily consumable by the E≡quivalence E≡ngine in CI environments, each rules repository should implement a **Release Workflow**. This workflow packages the `rules/` directory into versioned archives (`.zip` and `.tar.gz`) for ingestion by the engine.
+To ensure rules are easily consumable by the ≡quivalence ≡ngine in CI environments, each rules repository should implement a **Release Workflow**. This workflow packages the `rules/` directory into versioned archives (`.zip` and `.tar.gz`) for ingestion by the engine.
 
 .Example Release Workflow (`.github/workflows/release.yml`)
 [source,yaml]

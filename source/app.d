@@ -15,7 +15,7 @@ import equivalence.engine;
 import equivalence.path;
 
 /**
- * CLI wrapper for the Equivalence Engine
+ * CLI wrapper for ≡quivalence ≡ngine
  */
 class EquivalenceCLI {
     RuleEngine engine;
@@ -92,7 +92,7 @@ int main(string[] args) {
     if (outDir != "") dryRun = false;
 
     if (helpInformation.helpWanted) {
-        defaultGetoptPrinter("Equivalence Engine", helpInformation.options);
+        defaultGetoptPrinter("\u2261quivalence \u2261ngine", helpInformation.options);
         return 0;
     }
 
