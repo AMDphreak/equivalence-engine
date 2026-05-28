@@ -1,5 +1,7 @@
 = ≡quivalence ≡ngine
 
+image::assets/logo/logo.svg[Equivalence Engine logo,128,align=left]
+
 image:https://github.com/AMDphreak/equivalence-engine/actions/workflows/ci.yml/badge.svg[CI status,link=https://github.com/AMDphreak/equivalence-engine/actions/workflows/ci.yml]
 
 The core engine for the Equivalence Adaptation Ecosystem. This tool provides a powerful, version-aware D-based engine for migrating source code between library and framework versions using SDL-based rulesets.

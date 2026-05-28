@@ -1,0 +1,29 @@
+= ≡quivalence ≡ngine Overview
+:navtitle: Overview
+
+image::logo.svg[Equivalence Engine logo,128,align=left]
+
+The **≡quivalence ≡ngine** is the core binary of the Equivalence Adaptation Ecosystem. Written in high-performance D, it provides a fast, version-aware adaptation processor that migrates source code and configuration files between library/framework versions using lightweight, human-readable SDL rulesets.
+
+== Purpose
+
+As libraries and frameworks evolve, breaking changes make migrations painful and slow. The ≡quivalence ≡ngine is built to solve this. Instead of simple search-and-replace, the engine:
+* **Understands Versions:** Uses SemVer parsing to resolve the exact migration chain from version `A` to version `B`.
+* **Discovers Shortest Path:** If no direct rule exists from `1.0` to `3.0`, but rules exist for `1.0->2.0` and `2.0->3.0`, it automatically chained-applies the rulesets via the shortest path.
+* **Integrates with Git:** Dynamically retrieves rulesets from local folders or remote Git repositories on-the-fly.
+
+== Ecosystem Components
+
+The ecosystem is split into 5 modular, cooperative repositories:
+
+* **xref:equivalence-engine::index.adoc[≡quivalence ≡ngine] (This Component):** The CLI binary processor.
+* **xref:equivalence-engine-action::index.adoc[Equivalence Engine Action]:** A modular GitHub Action to automate adaptation in CI pipelines.
+* **xref:libequivalence::index.adoc[libequivalence]:** The core D library wrapping rules parsing and path mappings, used by the CLI.
+* **xref:equivalence-rules-code::index.adoc[Equivalence Rules: Code]:** The official rules library for code files (e.g. PyQt5 to PyQt6).
+* **xref:equivalence-rules-filesystem::index.adoc[Equivalence Rules: Filesystem]:** Mappings translating abstract folder references across Operating Systems.
+
+== Next Steps
+
+* xref:installation.adoc[Get started by installing the CLI]
+* xref:usage.adoc[Learn the CLI command options]
+* xref:equivalence-rules-code::index.adoc[Learn how to write code migration rulesets]

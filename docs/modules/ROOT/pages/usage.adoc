@@ -1,0 +1,53 @@
+= CLI Reference
+:navtitle: CLI Reference
+
+The `equivalence-engine` command processes files and applies SDL migration rules.
+
+== Basic Usage
+
+Run a migration by specifying the source path, version jump boundaries, and library binding name:
+
+[source,bash]
+----
+equivalence-engine --path ./src --rules-dir ./rules/qt --from 5.15 --to 6.0
+----
+
+== Usage with Remote Ruleset
+
+You can fetch rulesets directly from remote Git repositories. The engine will clone the repository to a temporary workspace, resolve and apply the required migration files, and clean up automatically.
+
+[source,bash]
+----
+equivalence-engine --rules-repo https://github.com/AMDphreak/equivalence-rules-code --from 5.15 --to 6.0 --path ./src
+----
+
+== CLI Options Reference
+
+[cols="1m,2"]
+|===
+| Option | Description
+
+| --path, -p <path>
+| Path to the directory or file containing the code to transform.
+
+| --rules-dir, -R <dir>
+| Path to a local directory containing `.sdl` rules files.
+
+| --rules-repo <url>
+| Git URL to a remote ruleset repository.
+
+| --rules-repo-branch <branch>
+| Branch of the rules repository (defaults to `main`).
+
+| --from, -f <version>
+| Starting version boundary (e.g. `5.15`).
+
+| --to, -t <version>
+| Target version boundary (e.g. `6.0`).
+
+| --extensions, -e <exts>
+| Comma-separated list of file extensions to process (defaults to `.py,.cpp,.h`).
+
+| --dry-run, -d
+| Perform dry run; prints replacements to stdout instead of overwriting files in-place.
+|===

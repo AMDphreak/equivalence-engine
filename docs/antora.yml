@@ -1,0 +1,5 @@
+name: equivalence-engine
+version: ~
+title: CLI Engine
+nav:
+  - modules/ROOT/nav.adoc

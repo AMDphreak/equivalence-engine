@@ -1,0 +1,32 @@
+= Installation & Setup
+:navtitle: Installation
+
+The ≡quivalence ≡ngine is distributed as a lightweight, native executable for Windows, macOS, and Linux. Choose the installer appropriate for your platform.
+
+== Windows
+
+You can install the engine on Windows via the official Windows Package Manager (**Winget**):
+
+[source,powershell]
+----
+winget install AMDphreak.EquivalenceEngine
+----
+
+This installs `equivalence-engine.exe` and adds it automatically to your user `PATH`.
+
+== macOS & Linux
+
+For Apple macOS and Linux workstations, we provide a **Homebrew** tap:
+
+[source,bash]
+----
+brew tap AMDphreak/homebrew-tap
+brew install equivalence-engine
+----
+
+== Manual Binary Installation
+
+Pre-compiled native binaries are attached to every release on our GitHub.
+1. Download the archive for your architecture from the link:https://github.com/AMDphreak/equivalence-engine/releases[Releases page].
+2. Extract the archive.
+3. Move the binary to a folder in your environment's `PATH` (e.g. `/usr/local/bin` on Unix-likes or `C:\Windows\System32` on Windows).

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>≡quivalence Adaptation Ecosystem | Code & Path Migration</title>
+  <meta name="description" content="A powerful, version-aware adaptation engine for migrating source code and cross-OS paths between libraries, frameworks, and operating systems using SDL rulesets.">
+  <meta property="og:title" content="≡quivalence Adaptation Ecosystem">
+  <meta property="og:description" content="Version-aware code and path migration powered by SDL rulesets.">
+  <meta property="og:image" content="https://AMDphreak.github.io/equivalence-engine/assets/logo.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/logo.png" type="image/png" sizes="512x512">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Overlay noise for tactile texture -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- Main Navigation -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="logo" id="nav-logo">
+        <img src="assets/logo.svg" alt="" class="logo-mark" width="36" height="36">
+        <span class="logo-text">quivalence</span>
+      </a>
+      <nav class="nav" id="main-nav">
+        <a href="#ecosystem" class="nav-link">Ecosystem</a>
+        <a href="#sandbox" class="nav-link">Adaptation Sandbox</a>
+        <a href="#install" class="nav-link">Install</a>
+        <a href="docs/index.html" class="nav-link nav-cta">Read the Docs</a>
+      </nav>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="badge-wrapper">
+          <span class="hero-badge">D-Powered Rule Engine</span>
+        </div>
+        <h1 class="hero-title">
+          Migrate source code <br>
+          <span class="highlight">without the friction.</span>
+        </h1>
+        <p class="hero-subtitle">
+          ≡quivalence is a version-aware adaptation ecosystem that automatically resolves, maps, and rewrites source code and cross-OS paths using lightweight SDL rulesets.
+        </p>
+        <div class="hero-actions">
+          <a href="docs/index.html" class="btn btn-primary" id="hero-cta-docs">Explore the Ecosystem Docs</a>
+          <a href="#install" class="btn btn-secondary" id="hero-cta-install">Get Started</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="visual-card">
+          <div class="card-header">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="card-title">equivalence-engine --run</span>
+          </div>
+          <div class="card-body">
+            <pre><code class="language-bash">$ equivalence-engine -p ./src \
+  --from 5.15 --to 6.0 \
+  --library python/PyQt
+
+<span class="text-glow">[info]</span> Resolving migration path...
+<span class="text-success">[path]</span> PyQt 5.15 -> PyQt 6.0 (1 step)
+<span class="text-glow">[info]</span> Applying 5.15-6.0.sdl rules...
+<span class="text-success">[done]</span> 42 files refactored in 18ms.</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ecosystem Showcase -->
+  <section id="ecosystem" class="ecosystem">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">The Ecosystem Repositories</h2>
+        <p class="section-subtitle">A modular suite of libraries, rulesets, actions, and tools working in perfect unison.</p>
+      </div>
+      
+      <div class="grid">
+        <!-- Core Engine -->
+        <div class="card repo-card">
+          <div class="repo-icon">⚙️</div>
+          <h3 class="card-heading">equivalence-engine</h3>
+          <p class="card-text">
+            The core D-based compiler and CLI binary. It analyzes files, fetches remote/local rulesets, maps dependency pathways, and transforms files in-place or into output directories.
+          </p>
+          <a href="docs/equivalence-engine/index.html" class="card-link" id="link-repo-engine">View Engine Docs &rarr;</a>
+        </div>
+
+        <!-- GitHub Action -->
+        <div class="card repo-card">
+          <div class="repo-icon">🔄</div>
+          <h3 class="card-heading">equivalence-engine-action</h3>
+          <p class="card-text">
+            A modular and reusable GitHub Action. Automate migrations, API updates, or platform adaptation in your CI pipelines with full pinning capabilities.
+          </p>
+          <a href="docs/equivalence-engine-action/index.html" class="card-link" id="link-repo-action">View CI Action Docs &rarr;</a>
+        </div>
+
+        <!-- libequivalence -->
+        <div class="card repo-card">
+          <div class="repo-icon">📦</div>
+          <h3 class="card-heading">libequivalence</h3>
+          <p class="card-text">
+            The core D-library underpinning the engine. Incorporate path resolution, SDL parsing, and text replacements natively into your own custom D tools and compilers.
+          </p>
+          <a href="docs/libequivalence/index.html" class="card-link" id="link-repo-lib">View Library Docs &rarr;</a>
+        </div>
+
+        <!-- Code Rules -->
+        <div class="card repo-card">
+          <div class="repo-icon">📝</div>
+          <h3 class="card-heading">equivalence-rules-code</h3>
+          <p class="card-text">
+            The official code adaptation rules repository. Includes comprehensive SDL patterns for migrating libraries, such as PyQt5 to PyQt6 class and module translations.
+          </p>
+          <a href="docs/equivalence-rules-code/index.html" class="card-link" id="link-repo-rules-code">View Code Rules Docs &rarr;</a>
+        </div>
+
+        <!-- Filesystem Rules -->
+        <div class="card repo-card">
+          <div class="repo-icon">📁</div>
+          <h3 class="card-heading">equivalence-rules-filesystem</h3>
+          <p class="card-text">
+            A dedicated domain ruleset mapping abstract system directories (`lib_dir`, `config_dir`) into literal concrete paths across Linux, Ubuntu, macOS, and Windows.
+          </p>
+          <a href="docs/equivalence-rules-filesystem/index.html" class="card-link" id="link-repo-rules-fs">View FS Rules Docs &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Sandbox -->
+  <section id="sandbox" class="sandbox">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Adaptation Sandbox</h2>
+        <p class="section-subtitle">Experience the rule engine in real-time. Choose a migration and watch how code and paths dynamically refactor.</p>
+      </div>
+
+      <div class="sandbox-widget" id="sandbox-widget">
+        <div class="sandbox-sidebar">
+          <div class="sidebar-group">
+            <label class="sidebar-label">Select Rule Target</label>
+            <button class="sandbox-option active" id="option-pyqt" data-target="pyqt">
+              <span class="option-title">PyQt5 to PyQt6</span>
+              <span class="option-desc">Python Imports & Enumerations</span>
+            </button>
+            <button class="sandbox-option" id="option-paths" data-target="paths">
+              <span class="option-title">Linux to Windows Path Map</span>
+              <span class="option-desc">Abstract Path Mappings</span>
+            </button>
+            <button class="sandbox-option" id="option-custom" data-target="custom">
+              <span class="option-title">Custom Rule Definition</span>
+              <span class="option-desc">Lightweight SDL Syntax</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sandbox-content">
+          <div class="panel-header">
+            <span class="panel-title" id="sandbox-panel-title">PyQt5 to PyQt6 Migration</span>
+            <button class="btn btn-action btn-sm" id="btn-run-sandbox">Apply Rules &rarr;</button>
+          </div>
+          <div class="sandbox-code-container">
+            <div class="code-panel">
+              <div class="code-panel-label">Original Content</div>
+              <pre><code id="code-original"># Loading imports from PyQt5
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction
+from PyQt5.QtCore import Qt
+
+app = QApplication([])
+window = QMainWindow()
+action = QAction("&Exit", window)
+action.setShortcutContext(Qt.WindowShortcut)</code></pre>
+            </div>
+            <div class="code-panel panel-output">
+              <div class="code-panel-label">Adapted Output</div>
+              <pre><code id="code-adapted"># Loading imports from PyQt5
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction
+from PyQt5.QtCore import Qt
+
+app = QApplication([])
+window = QMainWindow()
+action = QAction("&Exit", window)
+action.setShortcutContext(Qt.WindowShortcut)</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation -->
+  <section id="install" class="install">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Install the CLI</h2>
+        <p class="section-subtitle">Get the Equivalence CLI installed on your local workstation in seconds.</p>
+      </div>
+
+      <div class="install-tabs">
+        <div class="tabs-header">
+          <button class="tab-btn active" data-tab="windows" id="tab-windows-btn">Windows (Winget)</button>
+          <button class="tab-btn" data-tab="macos" id="tab-macos-btn">macOS & Linux (Homebrew)</button>
+        </div>
+        <div class="tabs-content">
+          <!-- Windows Tab -->
+          <div class="tab-pane active" id="tab-windows">
+            <pre><code>winget install AMDphreak.EquivalenceEngine</code></pre>
+          </div>
+          <!-- macOS Tab -->
+          <div class="tab-pane" id="tab-macos">
+            <pre><code>brew tap AMDphreak/homebrew-tap
+brew install equivalence-engine</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="logo">
+          <img src="assets/logo.svg" alt="" class="logo-mark" width="32" height="32">
+          <span class="logo-text">quivalence</span>
+        </div>
+        <p class="footer-copy">
+          &copy; 2026 AMDphreak. Under the MIT and Boost licenses. <br>
+          Part of the Equivalence Adaptation Ecosystem.
+        </p>
+      </div>
+      <div class="footer-right">
+        <div class="footer-column">
+          <h4>Ecosystem</h4>
+          <a href="#ecosystem">Repositories</a>
+          <a href="#sandbox">Sandbox</a>
+          <a href="#install">Downloads</a>
+        </div>
+        <div class="footer-column">
+          <h4>Documentation</h4>
+          <a href="docs/equivalence-engine/index.html">CLI Reference</a>
+          <a href="docs/equivalence-engine-action/index.html">CI Pipelines</a>
+          <a href="docs/libequivalence/index.html">D API</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

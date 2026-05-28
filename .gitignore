@@ -16,3 +16,14 @@
 !/walkthrough.md
 !/changelog-details/
 !/changelog-details/**
+!/package.json
+!/pnpm-lock.yaml
+!/antora-playbook.yml
+!/homepage/
+!/homepage/**
+!/docs/
+!/docs/**
+!/assets/
+!/assets/**
+!/supplemental-ui/
+!/supplemental-ui/**

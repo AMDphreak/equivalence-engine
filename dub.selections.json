@@ -5,7 +5,7 @@
 		"exception": {"path":"../../dev-centr/devcentr/unit-threaded/subpackages/exception"},
 		"from": {"path":"../../dev-centr/devcentr/unit-threaded/subpackages/from"},
 		"libequivalence": {"version":"ecbc77baa6863517b15b2fcd467aa24b2429386a","repository":"git+https://github.com/AMDphreak/libequivalence.git"},
-		"repo-get": "~master",
+		"repo-get": {"version":"11da8ba5863a69c48d5693c7847e99b9fa9b6d28","repository":"git+https://github.com/dev-centr/repo-get.git"},
 		"runner": {"path":"../../dev-centr/devcentr/unit-threaded/subpackages/runner"},
 		"sdlang-d": "0.10.6",
 		"taggedalgebraic": "0.11.24",

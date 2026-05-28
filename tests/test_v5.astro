@@ -1,0 +1,8 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+const posts = await Astro.glob('./posts/*.md');
+import { z } from 'astro:content';
+---
+<head>
+    <ViewTransitions />
+</head>
