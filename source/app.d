@@ -180,7 +180,7 @@ int main(string[] args) {
     if (rulesRepo != "") {
         cleanup();
         try {
-            import devcentr.repoget;
+            import repoget;
             auto provider = getProvider(rulesRepo);
             writeln("Cloning rules from ", rulesRepo, "...");
             provider.clone(rulesRepo, tmpRulesDir);

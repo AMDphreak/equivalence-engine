@@ -4,20 +4,10 @@ site:
   start_page: equivalence-engine:ROOT:index.adoc
 content:
   sources:
-    - url: https://github.com/AMDphreak/equivalence-engine.git
-      branches: [main]
-      start_path: docs
-    - url: https://github.com/AMDphreak/equivalence-engine-action.git
-      branches: [main]
-      start_path: docs
-    - url: https://github.com/AMDphreak/libequivalence.git
-      branches: [main]
-      start_path: docs
-    - url: https://github.com/AMDphreak/equivalence-rules-code.git
-      branches: [main]
-      start_path: docs
-    - url: https://github.com/AMDphreak/equivalence-rules-filesystem.git
-      branches: [main]
+    # Only this repo publishes Antora docs today. Sibling repos link out from index.adoc
+    # until they gain docs/ trees (and rules repos are renamed from evolution-rules-*).
+    - url: .
+      branches: HEAD
       start_path: docs
 ui:
   bundle:
