@@ -12,6 +12,17 @@
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="icon" href="assets/logo.png" type="image/png" sizes="512x512">
   <link rel="apple-touch-icon" href="assets/logo.png">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      var KEY = 'equivalence-theme-mode';
+      var mode = localStorage.getItem(KEY) || 'system';
+      var dark = mode === 'dark' ||
+        (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      document.documentElement.dataset.themeMode = mode;
+    })();
+  </script>
   <!-- Modern Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,6 +47,19 @@
         <a href="#install" class="nav-link">Install</a>
         <a href="docs/index.html" class="nav-link nav-cta">Read the Docs</a>
       </nav>
+      <div class="header-actions">
+        <div class="theme-switcher" role="group" aria-label="Color theme">
+          <button type="button" class="theme-btn" data-theme-mode="system" aria-label="System theme" title="System">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6v2H7v2h10v-2h-3v-2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 12H4V5h16v10z"/></svg>
+          </button>
+          <button type="button" class="theme-btn" data-theme-mode="light" aria-label="Light theme" title="Light">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V2h0v2h0zm0 18v-2h0v2h0zM4.93 4.93l1.41 1.41-1.41-1.41zm14.14 14.14 1.41 1.41-1.41-1.41zM4 12H2v0h2v0zm18 0h-2v0h2v0zM6.34 17.66l-1.41 1.41 1.41-1.41zm11.32-11.32 1.41-1.41-1.41 1.41zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
+          </button>
+          <button type="button" class="theme-btn" data-theme-mode="dark" aria-label="Dark theme" title="Dark">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A7 7 0 0 1 12 3z"/></svg>
+          </button>
+        </div>
+      </div>
       <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
         <span></span>
         <span></span>
@@ -267,6 +291,7 @@ brew install equivalence-engine</code></pre>
     </div>
   </footer>
 
+  <script src="theme.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

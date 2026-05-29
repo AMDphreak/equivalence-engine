@@ -143,7 +143,7 @@ rule "PyQt5-to-PyQt6-Enums" {
   const styleSheet = document.createElement("style");
   styleSheet.innerText = `
     @keyframes glowPulse {
-      0% { color: var(--accent); text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.8); }
+      0% { color: var(--accent); text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.25); }
       100% { color: var(--text-secondary); text-shadow: none; }
     }
   `;
